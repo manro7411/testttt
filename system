@@ -1,0 +1,393 @@
+Bangkok Bank - AI-Powered HR Talent Lifecycle Platform
+System Overview
+Enterprise-level Human Resources management platform with AI-powered analytics, monitoring, and automation for complete employee lifecycle management from recruitment to retention.
+
+Core Modules & Features
+1. Dashboard (Executive Overview)
+Real-time KPI metrics display
+Total candidates count with trend analysis
+Active employees tracking
+Hiring success rate percentage
+Attrition rate monitoring
+Data visualization charts:
+Recruitment pipeline funnel (Applied → Screening → Interview → Offer → Hired)
+Performance trend over time (monthly)
+Hiring by department breakdown
+AI Insights panel:
+Top candidate recommendations
+At-risk employee predictions
+Skill gap detection
+Interview request management card
+Recent activity feed with categorized events
+2. Recruitment Management
+Candidate tracking with dual view modes:
+Table view (detailed grid)
+Kanban board (drag-drop pipeline)
+Job Specification Creation (4-step wizard):
+Step 1: Basic Information
+Job title, department, location
+Employment type (Full-time, Part-time, Contract, Internship)
+Work model (On-site, Remote, Hybrid)
+Step 2: Job Details
+Job description
+Dynamic responsibilities list (add/remove)
+Dynamic requirements list (add/remove)
+Step 3: Skills & Qualifications
+Required skills (dynamic list)
+Preferred skills (dynamic list)
+Education level
+Minimum experience years
+Step 4: Compensation & Settings
+Salary range (min-max with currency)
+Benefits package (dynamic list)
+Hiring manager assignment
+Number of openings
+Application deadline
+Priority level (Low, Medium, High, Urgent)
+Preview summary before creation
+Candidate filtering and search
+AI skill matching scores
+Application status tracking
+3. Interview Scheduling
+Calendar integration
+Interview Request Management:
+Incoming requests from interviewers
+Request details: candidate, position, date/time, interviewer
+Alternative date suggestions
+Request messages and notes
+Three action workflows:
+Approve Request: Confirmation modal with email notifications
+Suggest Alternative: Date/time picker, reason notes, notification system
+Decline Request: Mandatory reason, warning alerts
+Status tracking (Pending, Approved, Rejected)
+Interview timeline view
+Participant coordination
+Meeting room booking
+4. Onboarding
+New hire checklist management
+Document collection and verification
+Training assignment
+Equipment provisioning
+Mentor assignment
+Progress tracking
+Welcome workflow automation
+5. Employee Monitoring
+Employee overview cards with performance metrics
+Risk assessment badges (Low, Medium, High)
+Performance trend visualization
+AI mood analysis
+Collaboration tracking
+Active Issues & Alerts System:
+Issue categories:
+Performance (productivity drops, quality issues)
+Engagement (meeting participation, collaboration)
+Productivity (deadline misses, velocity drops)
+Work-Life Balance (overtime, burnout risk)
+Severity levels: High, Medium, Low
+Status tracking: Urgent, In Progress, Monitoring, Resolved
+Issue details:
+Employee information (name, role, department)
+Detection date and last update
+Assigned handler (HR manager, team lead)
+Performance metrics dashboard
+Activity timeline with event types:
+System detection
+Alerts and notifications
+Escalations
+Actions taken
+Insights discovered
+Resolutions
+AI-recommended actions (4 suggestions per issue)
+Quick contact tools (Email, Phone, Slack)
+Case management:
+Create support tickets
+Reassign issues
+Mark as resolved
+Filtering: by category and severity
+Behavior insights panel
+6. Upskill & Training
+Course catalog
+Skill gap analysis
+Training recommendations
+Progress tracking
+Certification management
+Learning paths
+Performance impact measurement
+7. Performance Review
+Review cycle management
+Goal setting and tracking
+360-degree feedback
+Performance scoring
+Development plan creation
+Review history
+Manager and peer assessments
+8. Attrition Analysis
+Attrition rate tracking and trends
+At-risk employee identification with risk scores
+Exit reason analysis (pie chart)
+Department-level attrition breakdown
+AI predictions for resignation likelihood
+Key driver analysis:
+Compensation impact
+Work-life balance factors
+Career growth opportunities
+Management effectiveness
+Culture fit assessment
+Retention target tracking
+Action recommendations for retention
+9. Reports & Analytics
+Custom report builder
+Scheduled report generation
+Export functionality (PDF, Excel, CSV)
+Data visualization suite
+Comparative analysis
+Trend identification
+Predictive analytics
+10. Settings & Configuration
+Company profile management
+User role and permission management
+Integration settings
+Notification preferences
+Workflow automation rules
+Data retention policies
+11. User Profile & Account Management
+Profile Settings:
+Photo upload
+Personal information (name, email, phone, location, bio)
+Contact details
+Connected accounts (GitHub, LinkedIn, Google, Slack)
+Password management
+Two-factor authentication
+Activity Log:
+Comprehensive activity timeline
+Filters (All, Login, Profile, Settings, System)
+Search functionality
+Event details with timestamps
+IP address tracking
+Device information
+Privacy & Security:
+Active sessions management
+Password change with strength indicator
+2FA setup with QR code
+Privacy controls (profile visibility, data sharing)
+Data management (download, delete account)
+Security alerts
+Help & Support:
+Searchable FAQ system
+Tutorial videos
+Support ticket submission
+Contact information
+Live chat integration
+Documentation access
+12. Notification System
+Notification Panel (slide-out):
+Real-time notification count
+Category filtering (All, Interview Requests, System, Updates)
+Mark as read/unread
+Notification types:
+Interview requests from interviewers
+System alerts
+General updates
+Performance alerts
+Application updates
+Document requests
+Timestamp tracking
+Action buttons within notifications
+Bulk operations (mark all as read)
+13. Legal & Compliance
+Privacy Policy Page:
+10 comprehensive sections
+Data collection details
+Usage information
+Sharing policies
+Security measures
+User rights
+Cookie policy
+International transfers
+Updates notification
+Terms of Service:
+13 detailed sections
+Acceptance terms
+User responsibilities
+Prohibited activities
+Intellectual property
+Limitation of liability
+Dispute resolution
+Termination clauses
+Contact Us Page:
+Contact form (name, email, phone, department, subject, message)
+Bangkok Bank office information
+Phone support with hours
+Email addresses (general, technical, data privacy)
+Help center links
+Location map placeholder
+Database Entities & Relationships
+Core Entities:
+Users
+
+UserID, Name, Email, Password, Role, Department, Status
+CreatedDate, LastLogin, ProfilePhoto
+Candidates
+
+CandidateID, Name, Email, Phone, Position
+Experience, SkillMatch, AIScore, Status
+ApplicationDate, ResumeURL, Notes
+Job Specifications
+
+JobID, Title, Department, Location, EmploymentType, WorkModel
+Description, Responsibilities, Requirements
+RequiredSkills, PreferredSkills, Education, MinExperience
+SalaryMin, SalaryMax, Currency, Benefits
+HiringManager, Openings, Deadline, Priority
+CreatedDate, Status
+Employees
+
+EmployeeID, UserID, Role, Department, HireDate
+Performance, RiskLevel, Skills, Tenure
+ManagerID, Status
+Interviews
+
+InterviewID, CandidateID, JobID, InterviewerID
+ScheduledDate, Time, Location, Type
+Status (Pending, Approved, Rejected)
+AlternativeDates, Message, Notes
+RequestedBy, ApprovedBy, CreatedDate
+Issues & Alerts
+
+IssueID, EmployeeID, IssueType, Category, Severity
+Description, DetectedDate, LastUpdate
+AssignedTo, Status
+Metrics (JSON), Timeline (JSON)
+SuggestedActions (JSON)
+Performance Reviews
+
+ReviewID, EmployeeID, ReviewerID, Period
+Score, Goals, Feedback, Status
+CreatedDate, CompletedDate
+Training & Courses
+
+CourseID, Title, Description, Duration, Difficulty
+Category, Instructor, EnrollmentCount
+Objectives, Prerequisites
+Course Enrollments
+
+EnrollmentID, CourseID, EmployeeID
+EnrollmentDate, CompletionDate, Progress, Score
+Notifications
+
+NotificationID, UserID, Type, Category
+Title, Message, IsRead, CreatedDate
+ActionURL, Priority
+Activity Logs
+
+LogID, UserID, ActivityType, Description
+IPAddress, Device, Timestamp, Details (JSON)
+Onboarding Tasks
+
+TaskID, EmployeeID, TaskName, Description
+AssignedTo, DueDate, Status, Priority
+CompletedDate, Notes
+Attrition Data
+
+AttritionID, EmployeeID, ExitDate, Reason
+Category, Department, FeedbackScore
+ExitInterviewNotes
+AI/ML Features
+Candidate Matching AI:
+
+Skill matching algorithm (returns 0-100% score)
+Resume parsing and analysis
+Cultural fit assessment
+Success prediction scoring
+Employee Risk Prediction:
+
+Attrition risk scoring (0-100)
+Performance trend analysis
+Engagement pattern detection
+Burnout risk assessment
+Performance Analytics:
+
+Productivity trend analysis
+Team collaboration metrics
+Mood and sentiment analysis
+Work-life balance monitoring
+Issue Detection System:
+
+Anomaly detection in performance
+Engagement pattern analysis
+Deadline tracking and prediction
+Overtime and burnout detection
+Recommendation Engine:
+
+Training course recommendations
+Career path suggestions
+Skill gap identification
+Action plan generation
+User Roles & Permissions
+Super Admin: Full system access
+HR Manager: Recruitment, onboarding, employee management
+Department Manager: Team monitoring, performance reviews
+Employee: Self-service profile, training, performance view
+Interviewer: Interview scheduling, candidate evaluation
+Recruiter: Candidate management, job posting
+Technical Integrations
+Email System: Notifications, communications
+Calendar: Google Calendar, Outlook integration
+Communication: Slack, Microsoft Teams
+Authentication: SSO, OAuth, 2FA
+Storage: Document management, resume storage
+Analytics: Data warehouse, BI tools
+Video Conferencing: Zoom, Teams for interviews
+Workflows & Automation
+Recruitment Flow: Job Creation → Posting → Applications → Screening → Interviews → Offers → Hiring
+
+Interview Request Flow: Request Creation → HR Review → Approve/Suggest/Decline → Notification → Confirmation
+
+Issue Management Flow: AI Detection → Alert Generation → Assignment → Investigation → Action → Resolution
+
+Onboarding Flow: Offer Acceptance → Documentation → Equipment → Training → Mentor → Completion
+
+Performance Review Flow: Cycle Start → Self Assessment → Manager Review → Feedback → Goal Setting → Approval
+
+Security & Compliance
+PDPA (Thailand Personal Data Protection Act) compliance
+Role-based access control (RBAC)
+Data encryption (at rest and in transit)
+Audit logging for all actions
+Session management and timeout
+Multi-factor authentication
+Privacy controls and data deletion
+GDPR compliance considerations
+Branding & UI
+Primary Color: #6600FF (Purple - Bangkok Bank brand)
+Secondary Color: #1E5FD8 (Blue)
+Logo Integration: Bangkok Bank branding
+Responsive Design: Desktop-first with mobile support
+Navigation: Collapsible sidebar with icon/logo display
+Footer: Branded footer with legal links
+Summary for Architecture Design
+System Type: Enterprise Web Application (React + Tailwind CSS)
+
+Architecture Pattern: Modular SPA with component-based design
+
+Key Technology Stack:
+
+Frontend: React, TypeScript, Tailwind CSS v4
+Routing: React Router (Data mode)
+Charts: Recharts
+State Management: React Hooks (useState, useRef)
+UI Components: Custom components + Lucide React icons
+Database Considerations:
+
+Relational database (PostgreSQL recommended)
+JSON fields for flexible data (metrics, timelines, configurations)
+Time-series data for performance tracking
+Audit trail tables for compliance
+Search optimization for candidates and employees
+Scalability Needs:
+
+Support 1000+ employees
+Handle 500+ concurrent users
+Process 10,000+ candidates annually
+Real-time notifications
+Background job processing for AI analytics
