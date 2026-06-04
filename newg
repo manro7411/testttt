@@ -1,0 +1,480 @@
+var asCatdataTable = null;
+var rpNodeIdSize=0;
+var idpNodeIdSize=0;
+
+function resetTable(dataTable,tableId) {
+	$("#as_p").hide();
+	if(dataTable != null){
+		dataTable.clear();
+		dataTable.draw();
+		dataTable.destroy();
+	}
+	dataTable = null;
+	$(tableId).hide();
+}
+
+function showTable(tableId) {
+	$(tableId).show();
+}
+
+function hideTable(tableId){
+	$(tableId).hide();
+}
+
+function callTableASCatalogue(tableId,label,serviceId) {
+	$("#as_p").hide();
+	hideTable(tableId);
+	$.ajax({
+		type : 'POST',
+		url : 'ASServiceCatalogueServlet',
+		dataType : 'json',
+		data : {
+			label : label,
+			serviceId : serviceId,
+			payload : ""
+		},
+		success : function(data) {	
+			if (data != null) {
+				showTable(tableId);
+				asCatdataTable = generateASCatalogue(data,tableId);
+			}
+		},
+		error : function(data) {
+			hideTable(tableId);
+			$("#as_p").show();
+			$("#as_p").text("Fail to recieve data from server.");			
+		}
+	});
+}
+
+function generateASCatalogue(data,tableId){
+	dataTable = $(tableId).DataTable({
+	   	    "bJQueryUI": true,
+	   	    "bFilter": false,
+	        "bInfo": true,
+	        "aaSorting": [],
+		"aaData" : data,
+		"aoColumns" : 
+			[{
+				"mData" : "serviceIdEdit",
+				"mRender": function(data) {
+					if(data != null){
+						return "<a href=\"#\" onclick=\"showDataByServiceId('"+data+"')\">Click to view and edit</a>";
+					}
+					else
+						return "";
+				}
+			},{
+				"mData" : "serviceId",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			}, {
+				"mData" : "description",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			}, {
+				"mData" : "nodeRole",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			}, {
+				"mData" : "minAal",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			}, {
+				"mData" : "minIal",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			}, {
+				"mData" : "idpAllowNodeId",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			}, {
+				"mData" : "idpAllowIndustry",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			}, {
+				"mData" : "rpAllowNodeId",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			}, {
+				"mData" : "rpAllowIndustry",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			/* Additional rp_allow_node_id_2 :-> Ratchanon Traitiprat edited date: 29-05-26*/
+
+			}, {
+				"mData" : "returnDataByIdp",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			},{
+				"mData" : "rpAllowNodeId2",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			},{
+				"mData" : "rpAllowNodeId3",
+				"mRender": function(data) {
+					if(data != null)
+						return data;
+					else
+						return "";
+				}
+			}
+			/* Additional rp_allow_node_id_2 :-> Ratchanon Traitiprat edited date: 29-05-26*/
+
+			],
+   	    "bAutoWidth":false,
+ 		"aoColumnDefs" : [
+ 			{"className":"dt-center","aTargets":[3,4,5,8]},
+ 			{"className":"dt-left","aTargets":[0,1,2,6,7,9,10]}
+ 		],
+ 		"sDom":'<"bottom"l>t<"clear"><"pull-left"ip>',
+	  	"iDisplayLength": 10,
+	  	"sPaginationType": "full_numbers",				  
+         "oLanguage": {
+             "sEmptyTable": "Transaction Not Found."
+         },
+	});
+	return dataTable;
+}
+function addRpNode() {
+    var value = $("#rpInput").val().trim();
+    if (value === "") return;
+    var textarea = $("#rpAllowField").find("textarea");
+    let current = textarea.val()
+        ? textarea.val().split("\n").map(s => s.trim())
+        : [];
+
+    if (current.includes(value)) {
+        alert("Duplicate value");
+        return;
+    }
+    current.push(value);
+    textarea.val(current.join("\n"));
+    $("#rpInput").val("");
+}
+
+function addIdpNode() {
+    var value = $("#idpInput").val().trim();
+    if (value === "") return;
+    var textarea = $("#idpAllowField").find("textarea");
+
+    let current = textarea.val()
+        ? textarea.val().split("\n").map(s => s.trim())
+        : [];
+
+    if (current.includes(value)) {
+        alert("Duplicate value");
+        return;
+    }
+    current.push(value);
+    textarea.val(current.join("\n"));
+    $("#idpInput").val("");
+}
+
+// -=----------------------------------------------
+
+
+function buildNodeText(rawValue) {
+    if (rawValue == null || rawValue === "") {
+        return "";
+    }
+
+    return rawValue
+        .split(",")
+        .map(function (s) { return s.trim(); })
+        .filter(function (s) { return s !== ""; })
+        .join("\n");
+}
+
+function renderNodeTextarea(containerSelector, rowId, labelText, textareaId, rawValue) {
+    var nodeText = buildNodeText(rawValue);
+
+    $("#" + rowId).remove();
+
+    var $container = $(containerSelector);
+
+    var $row = $("<div>", {
+        id: rowId,
+        class: "row",
+        style: "margin-top:10px; margin-bottom:10px;"
+    });
+
+    var $label = $("<p>", {
+        class: "col-sm-3",
+        text: labelText
+    });
+
+    var $textarea = $("<textarea>", {
+        id: textareaId,
+        class: "col-md-3",
+    }).css({
+        width: "40%",       
+        height: nodeText ? "300px" : "120px",
+        padding: "8px",
+        resize: "vertical"
+    });
+
+    $textarea.val(nodeText);
+    $row.append($label);
+    $row.append($textarea);
+    $container.append($row);
+}
+
+
+// --------------------
+
+function clearEditform(){
+	$("#service_id").empty();
+	$("#headerField").empty();
+	$("#rpAllowField").empty();
+	$("#idpAllowField").empty();
+	$("#rpAllowField").removeClass("hidden");
+	$("#idpAllowField").removeClass("hidden");
+	$("#service_id").removeClass("hidden");
+	$("#headerField").removeClass("hidden");
+	$("#submit").removeClass("hidden");
+	$("#line").removeClass("hidden");	
+}
+function addNodeToTextarea(inputSelector,textareaSelector){
+	var value = $(inputSelector).val().trim();
+	if(value === "") return;
+	var $textarea = $(textareaSelector);
+	
+	var current = $textarea.val() 
+	
+}
+
+function showDataByServiceId(serviceId){	
+	var label = "getConfigByServiceId";
+	$.ajax({
+		type : 'POST',
+		url : 'ASServiceCatalogueServlet',
+		dataType : 'json',
+		data : {
+			label : label,
+			serviceId : serviceId,
+			payload : ""
+		},
+		success : function(data) {			
+			if (data != null && data.length == 1) {			
+				/*
+				 * Updated by Ratchanon Traitiprat on 29-05-2026	
+				 */
+				clearEditform();
+				var serviceInfo = data[0];
+				$("#service_id").append("<h2 id=\"serviceIdTxt\">"+serviceInfo.serviceId+"</h2> <br/>");
+				
+				$("#headerField").append("<div id=\"servDesc\" class=\"row\"></div>");
+				$("#servDesc").append("<p class=\"col-sm-3 medium\">Service Description</p>");
+				$("#servDesc").append("<input type=\"text\" class=\"col-md-3\" style=\"width:40%\" value=\""+serviceInfo.description+"\"/> <br/>");
+				
+				$("#headerField").append("<div id=\"servNodeRole\" class=\"row\"></div>");
+				$("#servNodeRole").append("<p class=\"col-sm-3 medium\">Node Role</p>");
+				$("#servNodeRole").append("<input type=\"text\" class=\"col-md-2\" style=\"width:40%\" value=\""+serviceInfo.nodeRole+"\"/> <br/>");
+				
+				$("#headerField").append("<div id=\"servMinAal\" class=\"row\"></div>");
+				$("#servMinAal").append("<p class=\"col-sm-3 medium\">Min Aal</p>");
+				$("#servMinAal").append("<input type=\"text\" class=\"col-md-2\" style=\"width:40%\" value=\""+serviceInfo.minAal+"\"/> <br/>");
+				
+				$("#headerField").append("<div id=\"servMinIal\" class=\"row\"></div>");
+				$("#servMinIal").append("<p class=\"col-sm-3 medium\">Min Ial</p>");
+				$("#servMinIal").append("<input type=\"text\" class=\"col-md-2\" style=\"width:40%\" value=\""+serviceInfo.minIal+"\"/> <br/>");
+				
+				$("#headerField").append("<div id=\"servReturnDataByIdp\" class=\"row\"></div>");
+				$("#servReturnDataByIdp").append("<p class=\"col-sm-3 medium\">Return Data By IDP</p>");
+				$("#servReturnDataByIdp").append("<input type=\"text\" class=\"col-md-2\" style=\"width:40%\" value=\""+serviceInfo.returnDataByIdp+"\"/> <br/>");
+				
+				/* Additional rp_allow_node_id_2 :-> Ratchanon Traitiprat edited date: 29-05-26*/	
+				
+				$("#rpAllowField").append("<div id=\"servRpAllowIndustry\" class=\"row\"></div>");
+				if(serviceInfo.asAllowIndustry == null){
+					$("#servRpAllowIndustry").append("<p class=\"col-sm-3\">RP Allow Industry</p>");
+					$("#servRpAllowIndustry").append("<input id=\"rpAllowIndustry\" type=\"text\" class=\"col-md-2\" style=\"width:40%\"/> <br/>");
+				}
+				else{
+					$("#servRpAllowIndustry").append("<p class=\"col-sm-3\">RP Allow Industry</p>");
+					$("#servRpAllowIndustry").append("<input id=\"rpAllowIndustry\" type=\"text\" class=\"col-md-2\" style=\"width:40%\" value=\""+serviceInfo.asAllowIndustry+"\"/> <br/>");
+				}
+						
+				//RP Allow Node ID 1,2,3
+				 renderNodeTextarea("#rpAllowField","servRpNodeId1","RP Allow Node ID 1","rpAllowNodeId",serviceInfo.rpAllowNodeId)			
+				 renderNodeTextarea("#rpAllowField","servRpNodeId2","RP Allow Node ID 2","rpAllowNodeId2TextArea",serviceInfo.rpAllowNodeId2)						
+				 renderNodeTextarea("#rpAllowField","servRpNodeId3","RP Allow Node ID 3","rpAllowNodeId3TextArea",serviceInfo.rpAllowNodeId3)
+				
+				//IDP
+				$("#idpAllowField").append("<div id=\"servIdpAllowIndustry\" class=\"row\"></div>");
+				if(serviceInfo.idpAllowIndustry == null){
+					$("#servIdpAllowIndustry").append("<p class=\"col-sm-3\">IDP Allow Industry</p>");
+					$("#servIdpAllowIndustry").append("<input id=\"idpAllowIndustry\" type=\"text\" class=\"col-md-2\" style=\"width:40%\"/> <br/>");
+				}
+				else{
+					$("#servIdpAllowIndustry").append("<p class=\"col-sm-3\">IDP Allow Industry</p>");
+					$("#servIdpAllowIndustry").append("<input id=\"idpAllowIndustry\" type=\"text\" class=\"col-md-2\" style=\"width:40%\" value=\""+serviceInfo.idpAllowIndustry+"\"/> <br/>");
+				}
+				
+				renderNodeTextarea("#idpAllowField","servIdpNodeId0","IDP Allow Node ID","idpAllowNodeId",serviceInfo.idpAllowNodeId);
+				
+				/* Additional rp_allow_node_id_2 :-> Ratchanon Traitiprat edited date: 29-05-26*/	
+			}
+		},
+		error : function(data) {
+			hideTable(tableId);
+			$("#as_p").show();
+			$("#as_p").text("Fail to recieve data from server.");
+		}
+	});
+}
+
+function submitAsCat(){
+	var jsonObj = new Object();
+	var serviceIdField = $("#serviceIdTxt").text();
+	var headerField = $("#headerField :input");// get all Text box element inside <div id="headerField">
+	var rpAllowField = $("#rpAllowField :input");// get all Text box element inside <div id="rpAllowField">
+	var rpAllowField2 = $("#rpAllowField2 :input");// get all Text box element inside <div id="rpAllowField">
+	var rpAllowField3 = $("#rpAllowField3 :input");// get all Text box element inside <div id="rpAllowField">
+
+	var idpAllowField = $("#idpAllowField :input");// get all Text box element inside <div id="idpAllowField">
+	
+	// Ratchanon Traitiprat
+	var rpAllowNodeIdText = $("#rpAllowNodeId").val() || "";
+	var rpAllowNodeId = "";
+	if (rpAllowNodeIdText && rpAllowNodeIdText.trim() !== "") {
+	    rpAllowNodeId = rpAllowNodeIdText
+	        .split("\n")
+	        .map(function(s){ return s.trim(); })
+	        .filter(function(s){ return s !==""; })
+	        .join(",");
+	}
+	var rpAllowIndustry = $("#rpAllowIndustry").val() || "";
+	
+	var idpAllowNodeIdText = $("#idpAllowField").find("textarea").val() || "";
+	var idpAllowNodeId = "";
+	if (idpAllowNodeIdText && idpAllowNodeIdText.trim() !== ""){
+		idpAllowNodeId = idpAllowNodeIdText
+	        .split("\n")
+	        .map(function(s){ return s.trim(); })
+	        .filter(function(s){ return s !==""; })
+	        .join(",");
+	}
+	var idpAllowIndustry = $("#idpAllowIndustry").val() || "";
+	
+	var rpAllowNodeIdText2 = $("#rpAllowNodeId2TextArea").val() || "";
+	var rpAllowNodeId2 = "";
+	if (rpAllowNodeIdText2 && rpAllowNodeIdText2.trim() !== "") {
+	    rpAllowNodeId2 = rpAllowNodeIdText2
+	        .split("\n")
+	        .map(function(s){ return s.trim(); })
+	        .filter(function(s){ return s !==""; })
+	        .join(",");
+	}
+	var rpAllowIndustry = $("#rpAllowIndustry").val() || "";
+	
+	var rpAllowNodeIdText3 = $("#rpAllowNodeId3TextArea").val() || "";
+	var rpAllowNodeId3 = "";
+	if (rpAllowNodeIdText3 && rpAllowNodeIdText3.trim() !== "") {
+	    rpAllowNodeId3 = rpAllowNodeIdText3
+	        .split("\n")
+	        .map(function(s){ return s.trim(); })
+	        .filter(function(s){ return s !==""; })
+	        .join(",");
+	}
+	var rpAllowIndustry = $("#rpAllowIndustry").val() || "";
+
+	// -------------------------------------------------------------------------
+	jsonObj.serviceId = serviceIdField
+	jsonObj.description = headerField[0].value;
+	jsonObj.nodeRole = headerField[1].value;
+	jsonObj.minAal = parseFloat(headerField[2].value);
+	jsonObj.minIal = parseFloat(headerField[3].value);
+	jsonObj.returnDataByIdp = headerField[4].value;
+	jsonObj.rpAllowIndustry = rpAllowIndustry;
+	jsonObj.rpAllowNodeId = rpAllowNodeId;
+	jsonObj.idpAllowIndustry = idpAllowIndustry;
+	jsonObj.idpAllowNodeId = idpAllowNodeId;
+	jsonObj.rpAllowNodeId2 = rpAllowNodeId2;
+	jsonObj.rpAllowNodeId3 = rpAllowNodeId3;
+	
+	var json = JSON.stringify(jsonObj);
+	var label = "updateConfigByServiceId";
+	var serviceId = serviceIdField;
+	
+	$.ajax({
+		type : 'POST',
+		url : 'ASServiceCatalogueServlet',
+		dataType : 'json',
+		data : {
+			label : label,
+			serviceId : serviceId,
+			payload : json
+		},
+		success : function(data) {			
+			if (data != null) {
+				resetTable(asCatdataTable,"#NDID_ASServiceCatTable");
+				$("#service_id").empty();
+				$("#headerField").empty();
+				$("#rpAllowField").empty();
+				$("#rpAllowField2").empty();
+				$("#rpAllowField3").empty();
+				$("#idpAllowField").empty();
+				$("#rpAllowField").addClass("hidden");
+				$("#idpAllowField").addClass("hidden");
+				$("#service_id").addClass("hidden");
+				$("#headerField").addClass("hidden");
+				$("#submit").addClass("hidden");
+				
+				$("#line").addClass("hidden");
+				callTableASCatalogue("#NDID_ASServiceCatTable","getAllConfig","");
+			}
+		},
+		error : function(data) {
+			hideTable(tableId);
+			$("#as_p").show();
+			$("#as_p").text("Fail to recieve data from server.");
+		}
+	});
+	
+}
