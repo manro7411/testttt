@@ -1,0 +1,52 @@
+function buildNodeText(rawValue) {
+    if (rawValue == null || rawValue === "") {
+        return "";
+    }
+
+    return rawValue
+        .split(",")
+        .map(function (s) { return s.trim(); })
+        .filter(function (s) { return s !== ""; })
+        .join("\n");
+}
+
+function renderNodeTextarea(containerSelector, rowId, labelText, textareaId, rawValue) {
+    var nodeText = buildNodeText(rawValue);
+
+    var $container = $(containerSelector);
+    $container.empty();
+
+    var $row = $("<div>", {
+        id: rowId
+    }).css({
+        display: "flex",
+        alignItems: "flex-start",
+        gap: "20px",
+        marginTop: "15px",
+        marginBottom: "15px"
+    });
+
+    var $label = $("<div>", {
+        text: labelText
+    }).css({
+        width: "180px",
+        fontSize: "16px",
+        lineHeight: "22px",
+        paddingTop: "6px"
+    });
+
+    var $textarea = $("<textarea>", {
+        id: textareaId
+    }).css({
+        width: "420px",
+        height: nodeText ? "300px" : "120px",
+        padding: "8px",
+        resize: "vertical"
+    });
+
+    $textarea.val(nodeText);
+
+    $row.append($label);
+    $row.append($textarea);
+    $container.append($row);
+}
