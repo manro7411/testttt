@@ -34,7 +34,9 @@ function callTableASCatalogue(tableId,label,serviceId) {
 			payload : ""
 		},
 		success : function(data) {	
+			console.log(data)
 			if (data != null) {
+				console.log(tableId);
 				showTable(tableId);
 				asCatdataTable = generateASCatalogue(data,tableId);
 			}
@@ -300,6 +302,7 @@ function showDataByServiceId(serviceId){
 			payload : ""
 		},
 		success : function(data) {			
+		    console.log("DATA =>", data);
 			if (data != null && data.length == 1) {			
 				/*
 				 * Updated by Ratchanon Traitiprat on 29-05-2026	
@@ -381,6 +384,7 @@ function submitAsCat(){
 	
 	// Ratchanon Traitiprat
 	var rpAllowNodeIdText = $("#rpAllowNodeId").val() || "";
+	console.log("debug1",rpAllowNodeIdText);
 	var rpAllowNodeId = "";
 	if (rpAllowNodeIdText && rpAllowNodeIdText.trim() !== "") {
 	    rpAllowNodeId = rpAllowNodeIdText
@@ -403,6 +407,9 @@ function submitAsCat(){
 	var idpAllowIndustry = $("#idpAllowIndustry").val() || "";
 	
 	var rpAllowNodeIdText2 = $("#rpAllowNodeId2TextArea").val() || "";
+	console.log("debug1",rpAllowNodeIdText2);
+
+	console.log("incoming req ->",rpAllowNodeIdText2)
 	var rpAllowNodeId2 = "";
 	if (rpAllowNodeIdText2 && rpAllowNodeIdText2.trim() !== "") {
 	    rpAllowNodeId2 = rpAllowNodeIdText2
@@ -414,6 +421,9 @@ function submitAsCat(){
 	var rpAllowIndustry = $("#rpAllowIndustry").val() || "";
 	
 	var rpAllowNodeIdText3 = $("#rpAllowNodeId3TextArea").val() || "";
+	console.log("debug1",rpAllowNodeIdText3);
+
+	console.log("incoming req ->",rpAllowNodeIdText3)
 	var rpAllowNodeId3 = "";
 	if (rpAllowNodeIdText3 && rpAllowNodeIdText3.trim() !== "") {
 	    rpAllowNodeId3 = rpAllowNodeIdText3
@@ -423,6 +433,9 @@ function submitAsCat(){
 	        .join(",");
 	}
 	var rpAllowIndustry = $("#rpAllowIndustry").val() || "";
+	console.log("rpAllowNodeId1 raw data ->",rpAllowNodeId)
+	console.log("rpAllowNodeId2 raw data ->",rpAllowNodeId2)
+	console.log("rpAllowNodeId3 raw data ->",rpAllowNodeId3)
 
 	// -------------------------------------------------------------------------
 	jsonObj.serviceId = serviceIdField
