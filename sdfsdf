@@ -1,0 +1,143 @@
+public List<EStatementReportPerfData> getReturnRequestPerf(
+        String startDate,
+        String endDate
+) {
+
+    List<EStatementReportPerfData> result = new ArrayList<>();
+
+    String sql = """
+        SELECT
+            t1.REQUEST_ID,
+            t1.REFERENCE_ID,
+            t1.CHANNEL,
+            t1.ACCOUNT_NO,
+            t1.DATASOURCE_RESPONSE,
+
+            TIMESTAMPDIFF(SECOND ,t1.RECEIVE_REQUEST_DATE, t1.FINISH_CREATE_ESTM),
+            TIMESTAMPDIFF(SECOND ,t1.RECEIVE_REQUEST_DATE, t1.REQUEST_DATA_RESP_DATE),
+            TIMESTAMPDIFF(SECOND ,t1.REQUEST_DATA_RESP_DATE, t1.RECEIVE_DATA_DATE),
+            TIMESTAMPDIFF(SECOND ,t1.RECEIVE_DATA_DATE, t1.FINISH_CREATE_ESTM),
+
+            DATE_FORMAT(t1.RECEIVE_REQUEST_DATE, '%Y-%m-%d %T.%f'),
+            DATE_FORMAT(t1.REQUEST_DATA_RESP_DATE, '%Y-%m-%d %T.%f'),
+            DATE_FORMAT(t1.RECEIVE_DATA_DATE, '%Y-%m-%d %T.%f'),
+            DATE_FORMAT(t1.START_CREATE_ESTM, '%Y-%m-%d %T.%f'),
+            DATE_FORMAT(t1.FINISH_CREATE_ESTM, '%Y-%m-%d %T.%f'),
+
+            t1.IS_ERROR,
+            t1.ERROR_CODE,
+            t1.ERROR_DESC,
+            t1.ERROR_DATE,
+            t1.IS_COMPLETED,
+
+            CASE
+                WHEN t1.CHANNEL = 'NDID' THEN -1
+                ELSE (
+                    SELECT COUNT(*)
+                    FROM ESTM_RETURN_STATEMENT t2
+                    WHERE t2.REQUEST_ID = t1.REQUEST_ID
+                )
+            END
+
+        FROM ESTM_REQUEST_STATEMENT t1
+        WHERE t1.RECEIVE_REQUEST_DATE >= CAST(:startDate AS DATETIME)
+          AND t1.RECEIVE_REQUEST_DATE <= CAST(:endDate AS DATETIME)
+        ORDER BY t1.RECEIVE_REQUEST_DATE
+    """;
+
+    try {
+        List<Object[]> rows = em.createNativeQuery(sql)
+                .setParameter("startDate", startDate.trim())
+                .setParameter("endDate", endDate.trim())
+                .getResultList();
+
+        for (Object[] r : rows) {
+            EStatementReportPerfData dto = new EStatementReportPerfData();
+
+            dto.setRequestID((String) r[0]);
+            dto.setReferenceID((String) r[1]);
+            dto.setChannel((String) r[2]);
+            dto.setAccountNO((String) r[3]);
+            dto.setDataSourceResponse((String) r[4]);
+
+            dto.setTotalTime(((Number) r[5]).intValue());
+            dto.setTotalTimeSendReqToQ(((Number) r[6]).intValue());
+            dto.setTotalTimeReqDate(((Number) r[7]).intValue());
+            dto.setTotalTimeCreatePDF(((Number) r[8]).intValue());
+
+            dto.setRecReqDate((String) r[9]);
+            dto.setReqDataRespDate((String) r[10]);
+            dto.setRecDataDate((String) r[11]);
+            dto.setStartCreateEstm((String) r[12]);
+            dto.setFinishCreateEstm((String) r[13]);
+
+            dto.setIsError((String) r[14]);
+            dto.setErrorCode((String) r[15]);
+            dto.setErrorDesc((String) r[16]);
+            dto.setErrorDate((String) r[17]);
+            dto.setIsCompleted((String) r[18]);
+
+            dto.setMbGetPDF(((Number) r[19]).intValue());
+
+            result.add(dto);
+        }
+
+        log.info("getReturnRequestPerf completed: {} - {}", startDate, endDate);
+
+    } catch (Exception e) {
+        log.error("getReturnRequestPerf failed", e);
+    }
+
+    return result;
+}
+
+    @GET
+    @Path("/performance")
+    public List<EStatementReportPerfData> getPerformance(
+            @QueryParam("start") String start,
+            @QueryParam("end") String end) {
+
+        return repository.getReturnRequestPerf(start, end);
+    }
+
+https://localhost:8443/EStatementWebService/estatement/report/performance?start=2026-06-14 17:05:25&end=2026-06-16 17:05:25
+
+SELECT
+    t1.REQUEST_ID,
+    t1.REFERENCE_ID,
+    t1.CHANNEL,
+    t1.ACCOUNT_NO,
+    t1.DATASOURCE_RESPONSE,
+
+    TIMESTAMPDIFF(SECOND ,t1.RECEIVE_REQUEST_DATE, t1.FINISH_CREATE_ESTM) AS TOTAL_TIME,
+    TIMESTAMPDIFF(SECOND ,t1.RECEIVE_REQUEST_DATE, t1.REQUEST_DATA_RESP_DATE) AS TOTAL_TIME_SEND_REQUEST_TO_Q,
+    TIMESTAMPDIFF(SECOND ,t1.REQUEST_DATA_RESP_DATE, t1.RECEIVE_DATA_DATE) AS TOTAL_TIME_REQUEST_DATE,
+    TIMESTAMPDIFF(SECOND ,t1.RECEIVE_DATA_DATE, t1.FINISH_CREATE_ESTM) AS TOTAL_TIME_CREATE_PDF,
+
+    DATE_FORMAT(t1.RECEIVE_REQUEST_DATE, '%Y-%m-%d %T.%f') AS RECEIVE_REQUEST_DATE,
+    DATE_FORMAT(t1.REQUEST_DATA_RESP_DATE, '%Y-%m-%d %T.%f') AS REQUEST_DATA_RESP_DATE,
+    DATE_FORMAT(t1.RECEIVE_DATA_DATE, '%Y-%m-%d %T.%f') AS RECEIVE_DATA_DATE,
+    DATE_FORMAT(t1.START_CREATE_ESTM, '%Y-%m-%d %T.%f') AS START_CREATE_ESTM,
+    DATE_FORMAT(t1.FINISH_CREATE_ESTM, '%Y-%m-%d %T.%f') AS FINISH_CREATE_ESTM,
+
+    t1.IS_ERROR,
+    t1.ERROR_CODE,
+    t1.ERROR_DESC,
+    t1.ERROR_DATE,
+    t1.IS_COMPLETED,
+
+    CASE 
+        WHEN t1.CHANNEL = 'NDID' THEN -1 
+        ELSE (
+            SELECT COUNT(*) 
+            FROM ESTM_RETURN_STATEMENT t2 
+            WHERE t2.REQUEST_ID = t1.REQUEST_ID
+        )
+    END AS MB_GET_PDF
+
+FROM ESTM_REQUEST_STATEMENT t1
+
+WHERE t1.RECEIVE_REQUEST_DATE >= '2026-06-14 17:05:25'
+  AND t1.RECEIVE_REQUEST_DATE <= '2026-06-16 17:05:25'
+
+ORDER BY t1.RECEIVE_REQUEST_DATE;
